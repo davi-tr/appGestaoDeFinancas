@@ -1,7 +1,7 @@
 package com.femass.gestao.infra.security;
 
-import com.femass.gestao.domain.Usuario;
-import com.femass.gestao.repository.UsuarioRepository;
+import com.femass.gestao.domain.usuario.Usuario;
+import com.femass.gestao.repository.usuario.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

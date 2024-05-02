@@ -1,8 +1,7 @@
-package com.femass.gestao.domain;
+package com.femass.gestao.domain.usuario;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.aspectj.weaver.ast.Not;
 
 public record DadosCadastroUsuario(
         @NotNull

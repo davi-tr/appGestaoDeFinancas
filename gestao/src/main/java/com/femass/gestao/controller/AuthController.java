@@ -1,11 +1,13 @@
 package com.femass.gestao.controller;
 
-import com.femass.gestao.domain.DadosCadastroUsuario;
-import com.femass.gestao.domain.DadosLoginRepostaUsuario;
-import com.femass.gestao.domain.DadosLoginUsuario;
-import com.femass.gestao.domain.Usuario;
+import com.femass.gestao.domain.carteira.Carteira;
+import com.femass.gestao.domain.usuario.DadosCadastroUsuario;
+import com.femass.gestao.domain.usuario.DadosLoginRepostaUsuario;
+import com.femass.gestao.domain.usuario.DadosLoginUsuario;
+import com.femass.gestao.domain.usuario.Usuario;
 import com.femass.gestao.infra.security.TokenService;
-import com.femass.gestao.repository.UsuarioRepository;
+import com.femass.gestao.repository.carteira.CarteiraRepository;
+import com.femass.gestao.repository.usuario.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,7 @@ public class AuthController {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final CarteiraRepository carteiraRepository;
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody DadosLoginUsuario dados){
@@ -40,6 +43,9 @@ public class AuthController {
 
         if(usuario.isEmpty()){
             Usuario novoUsuario = new Usuario(dados);
+            Carteira carteira = new Carteira();
+            this.carteiraRepository.save(carteira);
+            novoUsuario.addWallet(carteira);
             novoUsuario.setPassword(passwordEncoder.encode(dados.password()));
             this.usuarioRepository.save(novoUsuario);
             String token = this.tokenService.generateToken(novoUsuario);

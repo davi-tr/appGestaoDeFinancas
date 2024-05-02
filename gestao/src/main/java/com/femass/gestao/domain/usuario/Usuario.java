@@ -1,7 +1,8 @@
-package com.femass.gestao.domain;
+package com.femass.gestao.domain.usuario;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.femass.gestao.domain.carteira.Carteira;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,9 @@ public class Usuario implements UserDetails {
     private boolean status;
     private String password;
     private String login;
+    @OneToOne
+    @JoinColumn(name = "carteira_id")
+    Carteira carteira;
 
     public Usuario(DadosCadastroUsuario dados){
         this.status = true;
@@ -34,6 +38,11 @@ public class Usuario implements UserDetails {
         this.email = dados.email();
         this.login = dados.login();
         this.nome = dados.nome();
+    }
+
+    public void addWallet(Carteira carteira){
+        this.carteira = carteira;
+        carteira.setUsuario(this);
     }
 
     @Override

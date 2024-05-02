@@ -1,6 +1,6 @@
-package com.femass.gestao.repository;
+package com.femass.gestao.repository.usuario;
 
-import com.femass.gestao.domain.Usuario;
+import com.femass.gestao.domain.usuario.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
