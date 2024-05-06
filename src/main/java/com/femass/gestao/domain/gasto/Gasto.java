@@ -1,6 +1,7 @@
 package com.femass.gestao.domain.gasto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.femass.gestao.domain.carteira.Carteira;
 import jakarta.persistence.*;
@@ -23,7 +24,8 @@ public class Gasto {
 
     @ManyToOne
     @JoinColumn(name = "carteira_id", nullable = false)
-    Carteira carteira;
+    @JsonIgnore
+    protected Carteira carteira;
 
     private BigDecimal valor;
     private boolean eParcela;
@@ -32,13 +34,14 @@ public class Gasto {
     private String Local;
     private int parcelas;
 
-    public Gasto(BigDecimal valor, boolean eParcela, BigDecimal valorParcela, String descricao, String Local, Carteira carteira, int parcelas) {
-        this.valor = valor;
+    public Gasto(DadosGasto dadosGasto) {
+        this.valor = dadosGasto.valor();
+        this.descricao = dadosGasto.descricao();
+        this.Local = dadosGasto.Local();
         if(eParcela){
             this.valor = valorParcela.multiply(BigDecimal.valueOf(parcelas));
+            this.parcelas = dadosGasto.parcelas();
+            this.valorParcela = dadosGasto.valorParcela();
         }
-        this.descricao = descricao;
-        this.Local = Local;
-        this.carteira = carteira;
     }
 }
