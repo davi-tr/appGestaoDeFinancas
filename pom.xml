@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.femass</groupId>
     <artifactId>gestao</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-BETA</version>
     <name>gestao</name>
     <description>gestao</description>
     <properties>
