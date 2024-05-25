@@ -1,6 +1,7 @@
 package com.femass.gestao.domain.carteira;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.femass.gestao.domain.entradas.Entrada;
 import com.femass.gestao.domain.gasto.Gasto;
 import com.femass.gestao.domain.usuario.Usuario;
 import jakarta.persistence.*;
@@ -27,29 +28,54 @@ public class Carteira {
     @OneToOne
     @JoinColumn(name = "usuario_id")
     Usuario usuario;
+    private BigDecimal valorDisponivel;
     private BigDecimal Salario;
     @OneToMany(mappedBy = "carteira")
     List<Gasto> gastos;
+    @OneToMany(mappedBy = "carteira")
+    List<Entrada> entradas;
 
     public void addGasto(Gasto gasto) {
         gastos.add(gasto);
+    }
+    public void removeGasto(Gasto gasto) {
+        gastos.remove(gasto);
+    }
+
+    public void addEntrada(Entrada entrada) {
+        entradas.add(entrada);
+    }
+
+    public void removeEntrada(Entrada entrada) {
+        entradas.remove(entrada);
+    }
+
+    public void updateValorDisponivel() {
+        var total = getValorDisponivel();
+        for(Gasto gasto : gastos){
+            gasto.setValor(gasto.getValor().multiply(BigDecimal.valueOf(-1)));
+            total = (total.add(gasto.getValor()));
+            setValorDisponivel(total);
+        }
+        for(Entrada entrada : entradas){
+            total = (total.add(entrada.getValor()));
+            setValorDisponivel(total);
+        }
     }
 
     public void addUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
-    public List<Gasto> getGastos20() {
+    public List<Object> getGastos20() {
         int limite = 1;
         int index = 0;
-        List<Gasto> gastosN = new ArrayList<>();
+        List<Object> gastosN = new ArrayList<>();
         for (Gasto gasto : this.gastos) {
-            if (index <= limite){
                 gastosN.add(gasto);
-                index = index + 1;
-            }else {
-                break;
-            }
+        }
+        for (Entrada entrada : this.entradas) {
+            gastosN.add(entrada);
         }
         return gastosN;
     }
