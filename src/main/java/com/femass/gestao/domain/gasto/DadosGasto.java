@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record DadosGasto(
+        Long idGasto,
         @NotNull
         Long idCarteira,
         @NotNull
