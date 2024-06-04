@@ -8,6 +8,8 @@ import java.util.List;
 public record DadosGastoLimitado(
         BigDecimal valorDisponivel,
         Long idCarteira,
-        List<Object> listaDeMovimentacoes
+        List<Object> listaDeMovimentacoes,
+        BigDecimal totalEntradas,
+        BigDecimal totalSaidas
 ) {
 }

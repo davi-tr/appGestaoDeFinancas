@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @RestController
@@ -46,6 +47,10 @@ public class AuthController {
             Carteira carteira = new Carteira();
             this.carteiraRepository.save(carteira);
             novoUsuario.addWallet(carteira);
+            carteira.setSaldo(BigDecimal.valueOf(0));
+            carteira.setTotalEntradas(BigDecimal.ZERO);
+            carteira.setTotalSaidas(BigDecimal.ZERO);
+            carteira.setValorDisponivel(BigDecimal.valueOf(0));
             novoUsuario.setPassword(passwordEncoder.encode(dados.password()));
             this.usuarioRepository.save(novoUsuario);
             String token = this.tokenService.generateToken(novoUsuario);

@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -34,8 +35,10 @@ public class Gasto {
     private BigDecimal valorParcela;
     private String descricao;
     private String Local;
-    private String dataEntrada;
+    private ZonedDateTime dataEntrada;
     private int parcelas;
+    @Enumerated(EnumType.STRING)
+    private Categorias categoria;
 
     public Gasto(DadosGasto dadosGasto) {
         this.valor = dadosGasto.valor();
@@ -46,13 +49,10 @@ public class Gasto {
             this.parcelas = dadosGasto.parcelas();
             this.valorParcela = dadosGasto.valorParcela();
         }
-        this.dataEntrada = formatarData(LocalDateTime.now());
+        this.dataEntrada = ZonedDateTime.now();
+        this.categoria = dadosGasto.categoria();
     }
 
-    private String formatarData(LocalDateTime data) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy");
-        return data.format(formatter);
-    }
 
     public void updateGasto(DadosGasto dadosGasto){
         if (dadosGasto.valor() != valor){

@@ -15,11 +15,8 @@ import com.femass.gestao.repository.entrada.EntradaRepository;
 import com.femass.gestao.repository.gasto.GastoRepository;
 import com.femass.gestao.repository.usuario.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -34,15 +31,15 @@ public class UsuarioController {
     @GetMapping()
     public ResponseEntity getuser(@RequestBody DadosUsuario dadosUsuario){
         Usuario usuario = this.usuarioRepository.getReferenceById(dadosUsuario.id());
-        return ResponseEntity.ok(new DadosUnicoUsuario(usuario.getNome(), usuario.getEmail(), usuario.getNumeroTelefone(), usuario.getLogin(), usuario.getCarteira().getId(), usuario.getCarteira().getSalario()));
+        return ResponseEntity.ok(new DadosUnicoUsuario(usuario.getNome(), usuario.getEmail(), usuario.getNumeroTelefone(), usuario.getLogin(), usuario.getCarteira().getId(), usuario.getCarteira().getSaldo()));
     }
 
     @PutMapping()
     public ResponseEntity updateuser(@RequestBody DadosUsuario dadosUsuario){
         Usuario usuario = this.usuarioRepository.getReferenceById(dadosUsuario.id());
-        usuario.getCarteira().setSalario(dadosUsuario.Saldo());
+        usuario.getCarteira().setSaldo(dadosUsuario.Saldo());
         usuarioRepository.save(usuario);
-        return ResponseEntity.ok(new DadosUnicoUsuario(usuario.getNome(), usuario.getEmail(), usuario.getNumeroTelefone(), usuario.getLogin(), usuario.getCarteira().getId(), usuario.getCarteira().getSalario()));
+        return ResponseEntity.ok(new DadosUnicoUsuario(usuario.getNome(), usuario.getEmail(), usuario.getNumeroTelefone(), usuario.getLogin(), usuario.getCarteira().getId(), usuario.getCarteira().getSaldo()));
     }
 
     @PostMapping("/gasto")
@@ -81,12 +78,13 @@ public class UsuarioController {
     public ResponseEntity getCarteira(@RequestBody DadosUsuario dadosUsuario){
         Usuario usuario = this.usuarioRepository.getReferenceById(dadosUsuario.id());
         Carteira carteira = this.carteiraRepository.getReferenceById(usuario.getCarteira().getId());
-        carteira.setValorDisponivel(carteira.getSalario());
+        carteira.setValorDisponivel(carteira.getSaldo());
         carteira.updateValorDisponivel();
-        DadosGastoLimitado DadosGastoLimitado = new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastos20());
+        carteira.getTotalEntradasSaidas();
+        DadosGastoLimitado DadosGastoLimitado = new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMes(), carteira.getTotalEntradas(), carteira.getTotalSaidas());
         System.out.println(DadosGastoLimitado);
         carteiraRepository.save(carteira);
-        return ResponseEntity.ok(new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastos20()));
+        return ResponseEntity.ok(new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMes(), carteira.getTotalEntradas(), carteira.getTotalSaidas()));
 
     }
 

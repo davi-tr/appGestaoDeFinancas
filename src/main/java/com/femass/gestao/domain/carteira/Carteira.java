@@ -8,10 +8,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name= "Carteira")
@@ -29,11 +28,13 @@ public class Carteira {
     @JoinColumn(name = "usuario_id")
     Usuario usuario;
     private BigDecimal valorDisponivel;
-    private BigDecimal Salario;
+    private BigDecimal Saldo;
     @OneToMany(mappedBy = "carteira")
     List<Gasto> gastos;
     @OneToMany(mappedBy = "carteira")
     List<Entrada> entradas;
+    private BigDecimal totalEntradas;
+    private BigDecimal totalSaidas;
 
     public void addGasto(Gasto gasto) {
         gastos.add(gasto);
@@ -53,29 +54,68 @@ public class Carteira {
     public void updateValorDisponivel() {
         var total = getValorDisponivel();
         for(Gasto gasto : gastos){
-            gasto.setValor(gasto.getValor().multiply(BigDecimal.valueOf(-1)));
-            total = (total.add(gasto.getValor()));
-            setValorDisponivel(total);
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime trintaDias = now.plusDays(-30);
+            if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                if(gasto.getValor().compareTo(BigDecimal.ZERO)>0){
+                    gasto.setValor(gasto.getValor().multiply(BigDecimal.valueOf(-1)));
+                }
+                total = (total.add(gasto.getValor()));
+                setValorDisponivel(total);
+            }
+
         }
         for(Entrada entrada : entradas){
-            total = (total.add(entrada.getValor()));
-            setValorDisponivel(total);
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime trintaDias = now.plusDays(-30);
+            if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                total = (total.add(entrada.getValor()));
+                setValorDisponivel(total);
+            }
+
         }
     }
 
     public void addUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+    public void getTotalEntradasSaidas(){
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime trintaDias = now.plusDays(-30);
+        this.setTotalSaidas(BigDecimal.ZERO);
+        this.setTotalEntradas(BigDecimal.ZERO);
+        for(Entrada entrada : entradas){
+            if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                this.totalEntradas = totalEntradas.add(entrada.getValor());
+            }
+        }
 
-    public List<Object> getGastos20() {
+        for(Gasto gasto : gastos){
+            if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                this.totalSaidas = totalSaidas.add(gasto.getValor());
+            }
+
+        }
+
+    }
+    public List<Object> getGastosMes() {
         int limite = 1;
         int index = 0;
         List<Object> gastosN = new ArrayList<>();
         for (Gasto gasto : this.gastos) {
-                gastosN.add(gasto);
+                ZonedDateTime now = ZonedDateTime.now();
+                ZonedDateTime trintaDias = now.plusDays(-30);
+                if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                    gastosN.add(gasto);
+                }
+
         }
         for (Entrada entrada : this.entradas) {
-            gastosN.add(entrada);
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime trintaDias = now.plusDays(-30);
+            if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                gastosN.add(entrada);
+            }
         }
         return gastosN;
     }

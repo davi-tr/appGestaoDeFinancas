@@ -10,6 +10,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -29,7 +30,7 @@ public class Entrada {
     @JoinColumn(name = "carteira_id", nullable = false)
     @JsonIgnore
     protected Carteira carteira;
-    private String dataEntrada;
+    private ZonedDateTime dataEntrada;
     private BigDecimal valor;
     private String descricao;
     private String Local;
@@ -38,7 +39,7 @@ public class Entrada {
         this.valor = dadosEntrada.valor();
         this.descricao = dadosEntrada.descricao();
         this.Local = dadosEntrada.Local();
-        this.dataEntrada = formatarData(LocalDateTime.now());
+        this.dataEntrada = ZonedDateTime.now();
     }
 
     private String formatarData(LocalDateTime data) {
