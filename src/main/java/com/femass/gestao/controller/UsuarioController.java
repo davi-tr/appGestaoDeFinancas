@@ -74,18 +74,16 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/carteira")
-    public ResponseEntity getCarteira(@RequestBody DadosUsuario dadosUsuario){
-        Usuario usuario = this.usuarioRepository.getReferenceById(dadosUsuario.id());
+    @GetMapping("/carteira/{id}")
+    public ResponseEntity getCarteira(@PathVariable Long id){
+        Usuario usuario = this.usuarioRepository.getReferenceById(id);
         Carteira carteira = this.carteiraRepository.getReferenceById(usuario.getCarteira().getId());
         carteira.setValorDisponivel(carteira.getSaldo());
         carteira.updateValorDisponivel();
         carteira.getTotalEntradasSaidas();
         DadosGastoLimitado DadosGastoLimitado = new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMes(), carteira.getTotalEntradas(), carteira.getTotalSaidas());
-        System.out.println(DadosGastoLimitado);
         carteiraRepository.save(carteira);
         return ResponseEntity.ok(new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMes(), carteira.getTotalEntradas(), carteira.getTotalSaidas()));
-
     }
 
     @PostMapping("/entrada")
