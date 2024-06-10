@@ -51,6 +51,32 @@ public class Carteira {
         entradas.remove(entrada);
     }
 
+
+    public void updateValorDisponivel(Integer interval) {
+        var total = getValorDisponivel();
+        for(Gasto gasto : gastos){
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime trintaDias = now.plusDays(-interval);
+            if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                if(gasto.getValor().compareTo(BigDecimal.ZERO)>0){
+                    gasto.setValor(gasto.getValor().multiply(BigDecimal.valueOf(-1)));
+                }
+                total = (total.add(gasto.getValor()));
+                setValorDisponivel(total);
+            }
+
+        }
+        for(Entrada entrada : entradas){
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime trintaDias = now.plusDays(-interval);
+            if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                total = (total.add(entrada.getValor()));
+                setValorDisponivel(total);
+            }
+
+        }
+    }
+
     public void updateValorDisponivel() {
         var total = getValorDisponivel();
         for(Gasto gasto : gastos){
@@ -75,10 +101,29 @@ public class Carteira {
 
         }
     }
-
     public void addUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
+    public void getTotalEntradaSaidasGerenciavel(Integer intervalo){
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime interval = now.plusDays(-intervalo);
+        this.setTotalSaidas(BigDecimal.ZERO);
+        this.setTotalEntradas(BigDecimal.ZERO);
+        for(Entrada entrada : entradas){
+            if(!entrada.getDataEntrada().toInstant().isBefore(interval.toInstant())){
+                this.totalEntradas = totalEntradas.add(entrada.getValor());
+            }
+        }
+
+        for(Gasto gasto : gastos){
+            if(!gasto.getDataEntrada().toInstant().isBefore(interval.toInstant())){
+                this.totalSaidas = totalSaidas.add(gasto.getValor());
+            }
+
+        }
+    }
+
     public void getTotalEntradasSaidas(){
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime trintaDias = now.plusDays(-30);
@@ -98,6 +143,26 @@ public class Carteira {
         }
 
     }
+    public void getTotalEntradasSaidas(Integer interval){
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime trintaDias = now.plusDays(-interval);
+        this.setTotalSaidas(BigDecimal.ZERO);
+        this.setTotalEntradas(BigDecimal.ZERO);
+        for(Entrada entrada : entradas){
+            if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                this.totalEntradas = totalEntradas.add(entrada.getValor());
+            }
+        }
+
+        for(Gasto gasto : gastos){
+            if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                this.totalSaidas = totalSaidas.add(gasto.getValor());
+            }
+
+        }
+
+    }
+
     public List<Object> getGastosMes() {
         int limite = 1;
         int index = 0;
@@ -113,6 +178,28 @@ public class Carteira {
         for (Entrada entrada : this.entradas) {
             ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-30);
+            if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                gastosN.add(entrada);
+            }
+        }
+        return gastosN;
+    }
+
+    public List<Object> getGastosInterval(Integer intervalo) {
+        int limite = 1;
+        int index = 0;
+        List<Object> gastosN = new ArrayList<>();
+        for (Gasto gasto : this.gastos) {
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime trintaDias = now.plusDays(-intervalo);
+            if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
+                gastosN.add(gasto);
+            }
+
+        }
+        for (Entrada entrada : this.entradas) {
+            ZonedDateTime now = ZonedDateTime.now();
+            ZonedDateTime trintaDias = now.plusDays(-intervalo);
             if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                 gastosN.add(entrada);
             }

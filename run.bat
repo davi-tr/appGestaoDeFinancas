@@ -1,0 +1,2 @@
+Invoke-WebRequest -Uri "https://github.com/davi-tr/appGestaoDeFinancas/blob/main/target/gestao-0.0.5-BETA.jar" -OutFile "./mobile.jar" -UseBasicParsing -PassThru | Write-Progress -Activity "Downloading file" -Status "Progress"
+java -jar "C:\Downloads\mobile.jar"

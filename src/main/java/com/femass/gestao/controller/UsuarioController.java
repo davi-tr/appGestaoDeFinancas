@@ -85,6 +85,17 @@ public class UsuarioController {
         carteiraRepository.save(carteira);
         return ResponseEntity.ok(new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMes(), carteira.getTotalEntradas(), carteira.getTotalSaidas()));
     }
+    @GetMapping("/carteira/{id}/{intervalo}")
+    public ResponseEntity getCarteira(@PathVariable Long id, @PathVariable Integer intervalo){
+        Usuario usuario = this.usuarioRepository.getReferenceById(id);
+        Carteira carteira = this.carteiraRepository.getReferenceById(usuario.getCarteira().getId());
+        carteira.setValorDisponivel(carteira.getSaldo());
+        carteira.updateValorDisponivel(intervalo);
+        carteira.getTotalEntradaSaidasGerenciavel(intervalo);
+        DadosGastoLimitado DadosGastoLimitado = new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMes(), carteira.getTotalEntradas(), carteira.getTotalSaidas());
+        carteiraRepository.save(carteira);
+        return ResponseEntity.ok(new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosInterval(intervalo), carteira.getTotalEntradas(), carteira.getTotalSaidas()));
+    }
 
     @PostMapping("/entrada")
     public ResponseEntity createEntrada(@RequestBody DadosEntrada dadosEntrada){
@@ -108,7 +119,6 @@ public class UsuarioController {
         entradaRepository.save(entrada);
         return ResponseEntity.ok().build();
     }
-
     @DeleteMapping("/entrada")
     public ResponseEntity deleteEntrada(@RequestBody DadosDelete dadosDelete){
         Carteira carteira = this.carteiraRepository.getReferenceById(dadosDelete.idCarteira());
