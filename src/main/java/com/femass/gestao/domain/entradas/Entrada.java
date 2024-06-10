@@ -10,6 +10,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -39,7 +40,7 @@ public class Entrada {
         this.valor = dadosEntrada.valor();
         this.descricao = dadosEntrada.descricao();
         this.Local = dadosEntrada.Local();
-        this.dataEntrada = ZonedDateTime.now();
+        this.dataEntrada = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
     }
 
     private String formatarData(LocalDateTime data) {

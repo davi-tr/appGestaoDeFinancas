@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -49,7 +50,7 @@ public class Gasto {
             this.parcelas = dadosGasto.parcelas();
             this.valorParcela = dadosGasto.valorParcela();
         }
-        this.dataEntrada = ZonedDateTime.now();
+        this.dataEntrada = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
         this.categoria = dadosGasto.categoria();
     }
 
