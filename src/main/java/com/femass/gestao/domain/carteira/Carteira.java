@@ -135,6 +135,7 @@ public class Carteira {
         ZonedDateTime trintaDias = now.plusDays(-intervalo);
         this.setTotalSaidas(BigDecimal.ZERO);
         this.setTotalEntradas(BigDecimal.ZERO);
+        System.out.println("lul");
         for(Entrada entrada : entradas){
             if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                 this.totalEntradas = totalEntradas.add(entrada.getValor());
