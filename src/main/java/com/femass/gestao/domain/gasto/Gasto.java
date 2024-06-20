@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.femass.gestao.domain.carteira.Carteira;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -85,5 +86,9 @@ public class Gasto {
                 this.dataUltimaParcela = dataEntrada.plusMonths(dadosGasto.parcelas());
             }
         }
+    }
+
+    public void removeCard(Carteira carteira) {
+        setCarteira(null);
     }
 }

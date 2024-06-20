@@ -40,6 +40,7 @@ public class Carteira {
     public void addGasto(Gasto gasto) {
         gastos.add(gasto);
     }
+
     public void removeGasto(Gasto gasto) {
         gastos.remove(gasto);
     }
