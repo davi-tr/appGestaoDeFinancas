@@ -31,6 +31,7 @@ public class UsuarioController {
     @GetMapping()
     public ResponseEntity getuser(@RequestBody DadosUsuario dadosUsuario){
         Usuario usuario = this.usuarioRepository.getReferenceById(dadosUsuario.id());
+        System.out.println("alo");
         return ResponseEntity.ok(new DadosUnicoUsuario(usuario.getNome(), usuario.getEmail(), usuario.getNumeroTelefone(), usuario.getLogin(), usuario.getCarteira().getId(), usuario.getCarteira().getSaldo()));
     }
 
