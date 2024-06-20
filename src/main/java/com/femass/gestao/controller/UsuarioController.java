@@ -71,6 +71,7 @@ public class UsuarioController {
         Gasto gasto = this.gastoRepository.getReferenceById(dadosDelete.id());
         carteira.removeGasto(gasto);
         carteira.updateValorDisponivel();
+        carteiraRepository.save(carteira);
         return ResponseEntity.noContent().build();
     }
 
@@ -125,6 +126,7 @@ public class UsuarioController {
         Entrada entrada = this.entradaRepository.getReferenceById(dadosDelete.id());
         carteira.removeEntrada(entrada);
         carteira.updateValorDisponivel();
+        carteiraRepository.save(carteira);
         return ResponseEntity.noContent().build();
     }
 
