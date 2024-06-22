@@ -1,5 +1,6 @@
 package com.femass.gestao.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.femass.gestao.domain.carteira.Carteira;
 import com.femass.gestao.domain.carteira.DadosGastoLimitado;
 import com.femass.gestao.domain.entradas.DadosEntrada;
@@ -14,9 +15,18 @@ import com.femass.gestao.repository.carteira.CarteiraRepository;
 import com.femass.gestao.repository.entrada.EntradaRepository;
 import com.femass.gestao.repository.gasto.GastoRepository;
 import com.femass.gestao.repository.usuario.UsuarioRepository;
+import com.femass.gestao.service.CarregarGrafico;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -27,6 +37,9 @@ public class UsuarioController {
     private final CarteiraRepository carteiraRepository;
     private final GastoRepository gastoRepository;
     private final EntradaRepository entradaRepository;
+
+    @Autowired
+    private CarregarGrafico carregarGrafico;
 
     @GetMapping()
     public ResponseEntity getuser(@RequestBody DadosUsuario dadosUsuario){
@@ -64,6 +77,11 @@ public class UsuarioController {
         carteiraRepository.save(carteira);
         gastoRepository.save(gasto);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/gastos")
+    public Map<String, BigDecimal> getGastosPorCategoria(@RequestBody IntervaloDeDatasRequest request) {
+        return carregarGrafico.calcularGastosPorCategoria(request.getCarteiraId(), request.getDataInicioAsZonedDateTime(), request.getDataFimAsZonedDateTime());
     }
 
     @DeleteMapping("/gasto")
@@ -131,6 +149,49 @@ public class UsuarioController {
         entradaRepository.delete(entrada);
         carteiraRepository.save(carteira);
         return ResponseEntity.noContent().build();
+    }
+
+    public static class IntervaloDeDatasRequest {
+        private Long carteiraId;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+        private LocalDate dataInicio;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+        private LocalDate dataFim;
+
+        // Getters e Setters
+        public Long getCarteiraId() {
+            return carteiraId;
+        }
+
+        public void setCarteiraId(Long carteiraId) {
+            this.carteiraId = carteiraId;
+        }
+
+        public LocalDate getDataInicio() {
+            return dataInicio;
+        }
+
+        public void setDataInicio(LocalDate dataInicio) {
+            this.dataInicio = dataInicio;
+        }
+
+        public LocalDate getDataFim() {
+            return dataFim;
+        }
+
+        public void setDataFim(LocalDate dataFim) {
+            this.dataFim = dataFim;
+        }
+
+        public ZonedDateTime getDataInicioAsZonedDateTime() {
+            return dataInicio.atStartOfDay(ZoneId.of("America/Sao_Paulo"));
+        }
+
+        public ZonedDateTime getDataFimAsZonedDateTime() {
+            return dataFim.atStartOfDay(ZoneId.of("America/Sao_Paulo"));
+        }
     }
 
 }
