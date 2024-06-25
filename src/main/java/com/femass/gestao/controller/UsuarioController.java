@@ -66,16 +66,18 @@ public class UsuarioController {
         Gasto gasto = new Gasto(dadosGasto);
         gasto.setCarteira(carteira);
         carteira.addGasto(gasto);
+        gastoRepository.save(gasto);
+        carteira.updateValorDisponivel();
+        carteiraRepository.save(carteira);
         if(dadosGasto.recorrente()){
-            for(int i = 0; i <= dadosGasto.periodoRecorrencia(); i++) {
+            for(int i = 0; i < dadosGasto.periodoRecorrencia(); i++) {
                 Gasto gastoRecorrente = new Gasto(dadosGasto);
-                gastoRecorrente.setDataEntrada(ZonedDateTime.now().plusMonths(i));
+                gastoRecorrente.setDataEntrada(ZonedDateTime.now().plusMonths(i+1));
                 gastoRecorrente.setCarteira(carteira);
                 carteira.addGasto(gastoRecorrente);
                 gastoRepository.save(gastoRecorrente);
             }
         }
-
         carteira.updateValorDisponivel();
         carteiraRepository.save(carteira);
 
