@@ -42,6 +42,13 @@ public class Entrada {
         this.Local = dadosEntrada.Local();
         this.dataEntrada = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
     }
+   public void futuro(String dataEntradaN){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate localDate = LocalDate.parse(dataEntradaN, formatter);
+        LocalDateTime localDateTime = localDate.atStartOfDay();
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("America/Sao_Paulo"));
+        this.dataEntrada = zonedDateTime;
+   }
 
     private String formatarData(LocalDateTime data) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy");

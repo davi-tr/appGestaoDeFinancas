@@ -20,6 +20,8 @@ public record DadosGasto(
         String Local,
         int parcelas,
         @NotNull
-        Categorias categoria
+        Categorias categoria,
+        boolean recorrente,
+        int periodoRecorrencia
 ) {
 }

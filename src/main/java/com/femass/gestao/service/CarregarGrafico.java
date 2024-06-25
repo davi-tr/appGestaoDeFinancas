@@ -28,9 +28,7 @@ public class CarregarGrafico {
             gastosPorCategoria.put(categoria, BigDecimal.ZERO);
         }
 
-
         List<Gasto> gastos = gastoRepository.findByCarteiraIdAndDataEntradaBetween(carteiraId, dataInicio, dataFim);
-
 
         Map<Categorias, BigDecimal> gastosAgrupados = gastos.stream()
                 .collect(Collectors.groupingBy(

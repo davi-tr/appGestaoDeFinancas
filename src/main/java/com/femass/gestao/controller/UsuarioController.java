@@ -16,8 +16,11 @@ import com.femass.gestao.repository.entrada.EntradaRepository;
 import com.femass.gestao.repository.gasto.GastoRepository;
 import com.femass.gestao.repository.usuario.UsuarioRepository;
 import com.femass.gestao.service.CarregarGrafico;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,12 +62,23 @@ public class UsuarioController {
     @PostMapping("/gasto")
     public ResponseEntity createGasto(@RequestBody DadosGasto dadosGasto){
         Carteira carteira = this.carteiraRepository.getReferenceById(dadosGasto.idCarteira());
+
         Gasto gasto = new Gasto(dadosGasto);
         gasto.setCarteira(carteira);
         carteira.addGasto(gasto);
+        if(dadosGasto.recorrente()){
+            for(int i = 0; i <= dadosGasto.periodoRecorrencia(); i++) {
+                Gasto gastoRecorrente = new Gasto(dadosGasto);
+                gastoRecorrente.setDataEntrada(ZonedDateTime.now().plusMonths(i));
+                gastoRecorrente.setCarteira(carteira);
+                carteira.addGasto(gastoRecorrente);
+                gastoRepository.save(gastoRecorrente);
+            }
+        }
+
         carteira.updateValorDisponivel();
         carteiraRepository.save(carteira);
-        gastoRepository.save(gasto);
+
         return ResponseEntity.ok().build();
     }
     @PutMapping("/gasto")
@@ -106,6 +120,19 @@ public class UsuarioController {
         carteiraRepository.save(carteira);
         return ResponseEntity.ok(new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMes(), carteira.getTotalEntradas(), carteira.getTotalSaidas()));
     }
+
+    @GetMapping("/carteiraFuturo/{id}/dias={dias}")
+    public ResponseEntity getFuturoCarteira(@PathVariable Long id, @PathVariable Integer dias){
+        Usuario usuario = this.usuarioRepository.getReferenceById(id);
+        Carteira carteira = this.carteiraRepository.getReferenceById(usuario.getCarteira().getId());
+        carteira.setValorDisponivel(carteira.getSaldo());
+        carteira.updateValorDisponivelFuturo(dias);
+        carteira.getTotalEntradasSaidasFuturo(dias);
+        DadosGastoLimitado DadosGastoLimitado = new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMesNext(dias), carteira.getTotalEntradas(), carteira.getTotalSaidas());
+        carteiraRepository.save(carteira);
+        return ResponseEntity.ok(new DadosGastoLimitado(carteira.getValorDisponivel(),carteira.getId(), carteira.getGastosMesNext(dias), carteira.getTotalEntradas(), carteira.getTotalSaidas()));
+    }
+
     @GetMapping("/carteira/{id}/{intervalo}")
     public ResponseEntity getCarteira(@PathVariable Long id, @PathVariable Integer intervalo){
         Usuario usuario = this.usuarioRepository.getReferenceById(id);
@@ -121,14 +148,42 @@ public class UsuarioController {
     @PostMapping("/entrada")
     public ResponseEntity createEntrada(@RequestBody DadosEntrada dadosEntrada){
         Carteira carteira = this.carteiraRepository.getReferenceById(dadosEntrada.idCarteira());
+
+        Entrada entrada = new Entrada(dadosEntrada);
+        entrada.setCarteira(carteira);
+        carteira.addEntrada(entrada);
+        entradaRepository.save(entrada);
+
+        if (dadosEntrada.recorrente()) {
+            for (int i = 1; i <= dadosEntrada.periodoRecorrencia(); i++) {
+                Entrada entradaFutura = new Entrada(dadosEntrada);
+                entradaFutura.setDataEntrada(ZonedDateTime.now().plusMonths(i));
+                entradaFutura.setCarteira(carteira);
+                carteira.addEntrada(entradaFutura);
+                entradaRepository.save(entradaFutura);
+            }
+        }
+
+
+        carteira.updateValorDisponivel();
+        carteiraRepository.save(carteira);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/entradaFutura")
+    public ResponseEntity entradaFutura(@RequestBody DadosEntrada dadosEntrada){
+        Carteira carteira = this.carteiraRepository.getReferenceById(dadosEntrada.idCarteira());
         Entrada entrada = new Entrada(dadosEntrada);
         entrada.setCarteira(carteira);
         carteira.addEntrada(entrada);
         carteira.updateValorDisponivel();
+        entrada.futuro(dadosEntrada.data());
         carteiraRepository.save(carteira);
         entradaRepository.save(entrada);
         return ResponseEntity.ok().build();
     }
+
     @PutMapping("/entrada")
     public ResponseEntity updateEntrada(@RequestBody DadosEntrada dadosEntrada){
         var carteira = this.carteiraRepository.getReferenceById(dadosEntrada.idCarteira());
@@ -151,7 +206,12 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+
+
+
+
     public static class IntervaloDeDatasRequest {
+        @NotNull
         private Long carteiraId;
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
