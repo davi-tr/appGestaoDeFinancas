@@ -39,7 +39,7 @@ public class Entrada {
     public Entrada(DadosEntrada dadosEntrada) {
         this.valor = dadosEntrada.valor();
         this.descricao = dadosEntrada.descricao();
-        this.Local = dadosEntrada.Local();
+        this.Local = dadosEntrada.local();
         this.dataEntrada = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
     }
    public void futuro(String dataEntradaN){
@@ -62,8 +62,8 @@ public class Entrada {
         if (dadosEntrada.descricao() != descricao){
             this.descricao = dadosEntrada.descricao();
         }
-        if(dadosEntrada.Local() != Local){
-            this.Local = dadosEntrada.Local();
+        if(dadosEntrada.local() != Local){
+            this.Local = dadosEntrada.local();
         }
     }
 }

@@ -49,7 +49,7 @@ public class Gasto {
     public Gasto(DadosGasto dadosGasto) {
         this.valor = dadosGasto.valor();
         this.descricao = dadosGasto.descricao();
-        this.Local = dadosGasto.Local();
+        this.Local = dadosGasto.local();
         if(dadosGasto.eparcela()){
             this.valorParcela = dadosGasto.valorParcela();
             this.parcelas = dadosGasto.parcelas();
@@ -74,8 +74,8 @@ public class Gasto {
         if (dadosGasto.descricao() != descricao){
             this.descricao = dadosGasto.descricao();
         }
-        if(dadosGasto.Local() != Local){
-            this.Local = dadosGasto.Local();
+        if(dadosGasto.local() != Local){
+            this.Local = dadosGasto.local();
         }
         if(dadosGasto.eparcela()){
             this.valorParcela = dadosGasto.valorParcela();
