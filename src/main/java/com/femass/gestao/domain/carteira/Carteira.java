@@ -62,22 +62,9 @@ public class Carteira {
             ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
             ZonedDateTime trintaDias = now.plusDays(-interval);
             if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
-                if(gasto.getValor().compareTo(BigDecimal.ZERO)>0){
-                    gasto.setValor(gasto.getValor().multiply(BigDecimal.valueOf(-1)));
-                }
-                if(gasto.getEparcela()){
-                    var controleParc = gasto.getValorParcela().multiply(BigDecimal.valueOf(-1));
-                    this.totalSaidas = totalSaidas.add(controleParc);
-                    if(totalSaidas.compareTo(BigDecimal.ZERO)>0){
-                        totalSaidas = totalSaidas.multiply(BigDecimal.valueOf(-1));
-                    }
-                    total = (total.add(controleParc));
-                    setValorDisponivel(total);
-                }else{
                     this.totalSaidas = totalSaidas.add(gasto.getValor());
                     total = (total.add(gasto.getValor()));
                     setValorDisponivel(total);
-                }
             }
 
         }
@@ -99,22 +86,9 @@ public class Carteira {
             ZonedDateTime trintaDias = now.plusDays(-30);
             if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                 if(!gasto.getDataEntrada().toInstant().isAfter(ZonedDateTime.now().toInstant())) {
-                    if (gasto.getValor().compareTo(BigDecimal.ZERO) > 0) {
-                        gasto.setValor(gasto.getValor().multiply(BigDecimal.valueOf(-1)));
-                    }
-                    if (gasto.getEparcela()) {
-                        var controleParc = gasto.getValorParcela().multiply(BigDecimal.valueOf(-1));
-                        this.totalSaidas = totalSaidas.add(controleParc);
-                        if (totalSaidas.compareTo(BigDecimal.ZERO) > 0) {
-                            totalSaidas = totalSaidas.multiply(BigDecimal.valueOf(-1));
-                        }
-                        total = (total.add(controleParc));
-                        setValorDisponivel(total);
-                    } else {
                         this.totalSaidas = totalSaidas.add(gasto.getValor());
                         total = (total.add(gasto.getValor()));
                         setValorDisponivel(total);
-                    }
                 }
             }
 
@@ -140,22 +114,9 @@ public class Carteira {
             ZonedDateTime avanco = now.plusDays(diasMais);
             if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                 if(!gasto.getDataEntrada().toInstant().isAfter(avanco.toInstant())) {
-                    if (gasto.getValor().compareTo(BigDecimal.ZERO) > 0) {
-                        gasto.setValor(gasto.getValor().multiply(BigDecimal.valueOf(-1)));
-                    }
-                    if (gasto.getEparcela()) {
-                        var controleParc = gasto.getValorParcela().multiply(BigDecimal.valueOf(-1));
-                        this.totalSaidas = totalSaidas.add(controleParc);
-                        if (totalSaidas.compareTo(BigDecimal.ZERO) > 0) {
-                            totalSaidas = totalSaidas.multiply(BigDecimal.valueOf(-1));
-                        }
-                        total = (total.add(controleParc));
-                        setValorDisponivel(total);
-                    } else {
                         this.totalSaidas = totalSaidas.add(gasto.getValor());
                         total = (total.add(gasto.getValor()));
                         setValorDisponivel(total);
-                    }
                 }
             }
 
@@ -192,18 +153,7 @@ public class Carteira {
 
         for(Gasto gasto : gastos){
             if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
-                if(gasto.getEparcela()){
-                    BigDecimal controlaParc = gasto.getValorParcela().multiply(BigDecimal.valueOf(-1));
-                    this.totalSaidas = totalSaidas.add(controlaParc);
-                    if(gasto.getDataProxParcela().toInstant().isBefore(ZonedDateTime.now().toInstant())){
-                        gasto.setParcelaAtual(gasto.getParcelaAtual()+1);
-                        gasto.setParcelaRestante(gasto.getParcelas()-gasto.getParcelaAtual());
-                        gasto.setDataProxParcela(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusDays(30));
-                    }
-                    gasto.setDataUltimaParcela(gasto.getDataProxParcela().plusMonths(gasto.getParcelaRestante()));
-                }else{
                     this.totalSaidas = totalSaidas.add(gasto.getValor());
-                }
             }
         }
     }
@@ -224,19 +174,8 @@ public class Carteira {
         for(Gasto gasto : gastos) {
             if (!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())) {
                 if (!gasto.getDataEntrada().toInstant().isAfter(ZonedDateTime.now().toInstant())){
-                    if (gasto.getEparcela()) {
-                        BigDecimal controlaParc = gasto.getValorParcela().multiply(BigDecimal.valueOf(-1));
-                        this.totalSaidas = totalSaidas.add(controlaParc);
-                        if (gasto.getDataProxParcela().toInstant().isBefore(ZonedDateTime.now().toInstant())) {
-                            gasto.setParcelaAtual(gasto.getParcelaAtual() + 1);
-                            gasto.setParcelaRestante(gasto.getParcelas() - gasto.getParcelaAtual());
-                            gasto.setDataProxParcela(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusDays(30));
-                        }
-                        gasto.setDataUltimaParcela(gasto.getDataProxParcela().plusMonths(gasto.getParcelaRestante()));
-                    } else {
-                        this.totalSaidas = totalSaidas.add(gasto.getValor());
                     }
-                }
+                        this.totalSaidas = totalSaidas.add(gasto.getValor());
         }
         }
 
@@ -256,19 +195,9 @@ public class Carteira {
 
         for(Gasto gasto : gastos) {
             if (gasto.getDataEntrada().toInstant().isAfter(now.toInstant()) && gasto.getDataEntrada().toInstant().isBefore(avanco.toInstant())) {
-                    if (gasto.getEparcela()) {
-                        BigDecimal controlaParc = gasto.getValorParcela().multiply(BigDecimal.valueOf(-1));
-                        this.totalSaidas = totalSaidas.add(controlaParc);
-                        if (gasto.getDataProxParcela().toInstant().isBefore(ZonedDateTime.now().toInstant())) {
-                            gasto.setParcelaAtual(gasto.getParcelaAtual() + 1);
-                            gasto.setParcelaRestante(gasto.getParcelas() - gasto.getParcelaAtual());
-                            gasto.setDataProxParcela(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusDays(30));
-                        }
-                        gasto.setDataUltimaParcela(gasto.getDataProxParcela().plusMonths(gasto.getParcelaRestante()));
-                    } else {
+
                         this.totalSaidas = totalSaidas.add(gasto.getValor());
                     }
-            }
         }
 
     }

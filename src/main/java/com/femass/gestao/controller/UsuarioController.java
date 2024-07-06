@@ -62,18 +62,43 @@ public class UsuarioController {
     @PostMapping("/gasto")
     public ResponseEntity createGasto(@RequestBody DadosGasto dadosGasto){
         Carteira carteira = this.carteiraRepository.getReferenceById(dadosGasto.idCarteira());
-
         Gasto gasto = new Gasto(dadosGasto);
         gasto.setCarteira(carteira);
         carteira.addGasto(gasto);
         gastoRepository.save(gasto);
+        var controleID = gasto.getId();
+        carteiraRepository.save(carteira);
         carteira.updateValorDisponivel();
         carteiraRepository.save(carteira);
+        if(dadosGasto.eparcela()){
+            for(int i = 1; i < dadosGasto.parcelas(); i++){
+                var gastoAux = gastoRepository.getReferenceById(gasto.getId());
+                 if(i <= 1){
+                    gastoAux = gastoRepository.getReferenceById(gasto.getId());
+                }else{
+                    gastoAux = gastoRepository.getReferenceById(controleID + 1);
+                    controleID++;
+                }
+                Gasto gastoParcelado = new Gasto(dadosGasto);
+                gastoParcelado.setDataEntrada(ZonedDateTime.now().plusMonths(i));
+                gastoParcelado.setCarteira(carteira);
+                gastoParcelado.setIdGastoInicial(gasto.getId());
+                gastoParcelado.setParcelaAtual(i+1);
+                gastoParcelado.setParcelaRestante(dadosGasto.parcelas() - (i+1));
+                gastoParcelado.setDataProxParcela(gastoParcelado.getDataEntrada().plusDays(30));
+                gastoParcelado.setEParcela(true);
+                gastoParcelado.setDataUltimaParcela(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusMonths(dadosGasto.parcelas()));
+                gastoParcelado.setValor((dadosGasto.valorParcela().multiply(BigDecimal.valueOf(-1))));
+                carteira.addGasto(gastoParcelado);
+                gastoRepository.save(gastoParcelado);
+            }
+        }
         if(dadosGasto.recorrente()){
-            for(int i = 0; i < dadosGasto.periodoRecorrencia(); i++) {
+            for(int i = 1; i < dadosGasto.periodoRecorrencia(); i++) {
                 Gasto gastoRecorrente = new Gasto(dadosGasto);
-                gastoRecorrente.setDataEntrada(ZonedDateTime.now().plusMonths(i+1));
+                gastoRecorrente.setDataEntrada(ZonedDateTime.now().plusMonths(i));
                 gastoRecorrente.setCarteira(carteira);
+                gastoRecorrente.setIdGastoInicial(gasto.getId());
                 carteira.addGasto(gastoRecorrente);
                 gastoRepository.save(gastoRecorrente);
             }
@@ -106,8 +131,85 @@ public class UsuarioController {
         Gasto gasto = this.gastoRepository.getReferenceById(dadosDelete.id());
         carteira.removeGasto(gasto);
         carteira.updateValorDisponivel();
+        var controlaID = 1L;
+        if(gasto.getIdGastoInicial() !=null){
+            controlaID = gasto.getIdGastoInicial();
+        }else {
+            controlaID = gasto.getId();
+        }
         gastoRepository.delete(gasto);
         carteiraRepository.save(carteira);
+        if(gasto.getEparcela()){
+            var gastoDel = gastoRepository.findByIdGastoInicial(controlaID);
+            for(var gastoD:gastoDel){
+                    carteira.removeGasto(gastoD);
+                    carteira.updateValorDisponivel();
+                    gastoRepository.delete(gastoD);
+                    carteiraRepository.save(carteira);
+            }
+            try{
+                var gastoNullIni = gastoRepository.getReferenceById(gasto.getIdGastoInicial());
+
+                if(!(gastoNullIni==null) && !(gasto.getIdGastoInicial() == null)){
+                    carteira.removeGasto(gastoNullIni);
+                    carteira.updateValorDisponivel();
+                    gastoRepository.delete(gastoNullIni);
+                    carteiraRepository.save(carteira);
+                }
+
+            }catch (RuntimeException e){
+                return ResponseEntity.noContent().build();
+            }
+
+        }
+        if(dadosDelete.recorrente()){
+            if(gasto.getIdGastoInicial() == null){
+            var gastoDel = gastoRepository.findByIdGastoInicial(gasto.getId());
+            for(var gastoD:gastoDel){
+                if(dadosDelete.excluirTodos()){
+                    carteira.removeGasto(gastoD);
+                    carteira.updateValorDisponivel();
+                    gastoRepository.delete(gastoD);
+                    carteiraRepository.save(carteira);
+                }else{
+                    if(gastoD.getDataEntrada().toInstant().isAfter(gasto.getDataEntrada().toInstant())){
+                        carteira.removeGasto(gastoD);
+                        carteira.updateValorDisponivel();
+                        gastoRepository.delete(gastoD);
+                        carteiraRepository.save(carteira);
+                    }
+                }
+
+            }
+        }else{
+                var gastoDel = gastoRepository.findByIdGastoInicial(gasto.getIdGastoInicial());
+                for(var gastoD:gastoDel){
+                    if(dadosDelete.excluirTodos()){
+                        carteira.removeGasto(gastoD);
+                        carteira.updateValorDisponivel();
+                        gastoRepository.delete(gastoD);
+                        carteiraRepository.save(carteira);
+                    }else{
+                        if(gastoD.getDataEntrada().toInstant().isAfter(gasto.getDataEntrada().toInstant())) {
+                            carteira.removeGasto(gastoD);
+                            carteira.updateValorDisponivel();
+                            gastoRepository.delete(gastoD);
+                            carteiraRepository.save(carteira);
+                        }
+                    }
+                }
+                var gastoNullIni = gastoRepository.getReferenceById(gasto.getIdGastoInicial());
+                if(!(gastoNullIni==null)){
+                    if(dadosDelete.excluirTodos()){
+                        carteira.removeGasto(gastoNullIni);
+                        carteira.updateValorDisponivel();
+                        gastoRepository.delete(gastoNullIni);
+                        carteiraRepository.save(carteira);
+                    }
+                }
+            }
+
+        }
         return ResponseEntity.noContent().build();
     }
 
@@ -161,6 +263,7 @@ public class UsuarioController {
                 Entrada entradaFutura = new Entrada(dadosEntrada);
                 entradaFutura.setDataEntrada(ZonedDateTime.now().plusMonths(i));
                 entradaFutura.setCarteira(carteira);
+                entradaFutura.setIdEntradaInicial(entrada.getId());
                 carteira.addEntrada(entradaFutura);
                 entradaRepository.save(entradaFutura);
             }
@@ -205,6 +308,54 @@ public class UsuarioController {
         carteira.updateValorDisponivel();
         entradaRepository.delete(entrada);
         carteiraRepository.save(carteira);
+        if(dadosDelete.recorrente()){
+            if(entrada.getIdEntradaInicial() == null){
+                var entradaDel = entradaRepository.findByIdEntradaInicial(entrada.getId());
+                for(var entradaD:entradaDel){
+                    if(dadosDelete.excluirTodos()){
+                        carteira.removeEntrada(entradaD);
+                        carteira.updateValorDisponivel();
+                        entradaRepository.delete(entrada);
+                        carteiraRepository.save(carteira);
+                    }else{
+                        if(entradaD.getDataEntrada().toInstant().isAfter(entrada.getDataEntrada().toInstant())){
+                            carteira.removeEntrada(entradaD);
+                            carteira.updateValorDisponivel();
+                            entradaRepository.delete(entradaD);
+                            carteiraRepository.save(carteira);
+                        }
+                    }
+
+                }
+            }else{
+                var entradaDel = entradaRepository.findByIdEntradaInicial(entrada.getIdEntradaInicial());
+                for(var entradaD:entradaDel){
+                    if(dadosDelete.excluirTodos()){
+                        carteira.removeEntrada(entradaD);
+                        carteira.updateValorDisponivel();
+                        entradaRepository.delete(entradaD);
+                        carteiraRepository.save(carteira);
+                    }else{
+                        if(entradaD.getDataEntrada().toInstant().isAfter(entrada.getDataEntrada().toInstant())) {
+                            carteira.removeEntrada(entradaD);
+                            carteira.updateValorDisponivel();
+                            entradaRepository.delete(entradaD);
+                            carteiraRepository.save(carteira);
+                        }
+                    }
+                }
+                var entradaNullIni = entradaRepository.getReferenceById(entrada.getIdEntradaInicial());
+                if(!(entradaNullIni==null)){
+                    if(dadosDelete.excluirTodos()){
+                        carteira.removeEntrada(entradaNullIni);
+                        carteira.updateValorDisponivel();
+                        entradaRepository.delete(entradaNullIni);
+                        carteiraRepository.save(carteira);
+                    }
+                }
+            }
+
+        }
         return ResponseEntity.noContent().build();
     }
 

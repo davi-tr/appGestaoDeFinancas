@@ -35,6 +35,7 @@ public class Entrada {
     private BigDecimal valor;
     private String descricao;
     private String Local;
+    private Long idEntradaInicial;
 
     public Entrada(DadosEntrada dadosEntrada) {
         this.valor = dadosEntrada.valor();

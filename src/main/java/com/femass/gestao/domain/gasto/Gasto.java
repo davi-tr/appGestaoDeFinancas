@@ -45,9 +45,14 @@ public class Gasto {
     private ZonedDateTime dataUltimaParcela;
     @Enumerated(EnumType.STRING)
     private Categorias categoria;
+    private Long idGastoInicial;
 
     public Gasto(DadosGasto dadosGasto) {
-        this.valor = dadosGasto.valor();
+        if(dadosGasto.eparcela()){
+            this.valor = dadosGasto.valor();
+        }else{
+            this.valor = dadosGasto.valor().multiply(BigDecimal.valueOf(-1));
+        }
         this.descricao = dadosGasto.descricao();
         this.Local = dadosGasto.local();
         if(dadosGasto.eparcela()){
@@ -59,6 +64,7 @@ public class Gasto {
             this.dataProxParcela = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusDays(30);
             this.eParcela = true;
             this.dataUltimaParcela = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusMonths(parcelas);
+            this.valor = getValor().multiply(BigDecimal.valueOf(-1));
         }
         this.dataEntrada = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
         this.categoria = dadosGasto.categoria();

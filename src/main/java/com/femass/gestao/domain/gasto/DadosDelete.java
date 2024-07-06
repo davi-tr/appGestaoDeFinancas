@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record DadosDelete(
         @NotNull Long id,
-        @NotNull Long idCarteira
+        @NotNull Long idCarteira,
+        @NotNull boolean recorrente,
+        @NotNull boolean excluirTodos
 ) {
 }
