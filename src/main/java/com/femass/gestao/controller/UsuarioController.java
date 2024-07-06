@@ -212,7 +212,7 @@ public class UsuarioController {
         }
         return ResponseEntity.noContent().build();
     }
-
+// TODO: VERIFICAR MOTIVO DE NÃO REALIZAR CALCULO DO TOTAL DISPONIVEL CORRETAMENTE
     @GetMapping("/carteira/{id}")
     public ResponseEntity getCarteira(@PathVariable Long id){
         Usuario usuario = this.usuarioRepository.getReferenceById(id);
