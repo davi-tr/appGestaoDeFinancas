@@ -53,8 +53,6 @@ public class Carteira {
         entradas.remove(entrada);
     }
 
-    @JsonIgnoreProperties
-    ZoneId zoneId = ZoneId.of("America/Sao_Paulo");
 
     public void updateValorDisponivel(Integer interval) {
         var total = getValorDisponivel();
