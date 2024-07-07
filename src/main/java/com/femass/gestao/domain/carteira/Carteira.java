@@ -57,7 +57,7 @@ public class Carteira {
     public void updateValorDisponivel(Integer interval) {
         var total = getValorDisponivel();
         for(Gasto gasto : gastos){
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-interval);
             if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                     this.totalSaidas = totalSaidas.add(gasto.getValor());
@@ -67,7 +67,7 @@ public class Carteira {
 
         }
         for(Entrada entrada : entradas){
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-interval);
             if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                 total = (total.add(entrada.getValor()));
@@ -80,7 +80,7 @@ public class Carteira {
     public void updateValorDisponivel() {
         var total = getValorDisponivel();
         for(Gasto gasto : gastos){
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-30);
             if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                 if(!gasto.getDataEntrada().toInstant().isAfter(ZonedDateTime.now().toInstant())) {
@@ -92,7 +92,7 @@ public class Carteira {
 
         }
         for(Entrada entrada : entradas){
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-30);
             if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                 if(!entrada.getDataEntrada().toInstant().isAfter(ZonedDateTime.now().toInstant())) {
@@ -107,7 +107,7 @@ public class Carteira {
     public void updateValorDisponivelFuturo(Integer diasMais) {
         var total = getValorDisponivel();
         for(Gasto gasto : gastos){
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-30);
             ZonedDateTime avanco = now.plusDays(diasMais);
             if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
@@ -120,7 +120,7 @@ public class Carteira {
 
         }
         for(Entrada entrada : entradas){
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-30);
             ZonedDateTime avanco = now.plusDays(diasMais);
             if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
@@ -138,7 +138,7 @@ public class Carteira {
     }
 
     public void getTotalEntradaSaidasGerenciavel(Integer intervalo){
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime trintaDias = now.plusDays(-intervalo);
         this.setTotalSaidas(BigDecimal.ZERO);
         this.setTotalEntradas(BigDecimal.ZERO);
@@ -157,7 +157,7 @@ public class Carteira {
     }
 
     public void getTotalEntradasSaidas(){
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime trintaDias = now.plusDays(-30);
         this.setTotalSaidas(BigDecimal.ZERO);
         this.setTotalEntradas(BigDecimal.ZERO);
@@ -180,7 +180,7 @@ public class Carteira {
     }
 
     public void getTotalEntradasSaidasFuturo(Integer inter){
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime trintaDias = now.plusDays(-30);
         ZonedDateTime avanco = now.plusDays(inter);
         this.setTotalSaidas(BigDecimal.ZERO);
@@ -201,7 +201,7 @@ public class Carteira {
     }
 
     public void getTotalEntradasSaidas(Integer interval){
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime trintaDias = now.plusDays(-interval);
         this.setTotalSaidas(BigDecimal.ZERO);
         this.setTotalEntradas(BigDecimal.ZERO);
@@ -233,7 +233,7 @@ public class Carteira {
             }
         }
         for (Entrada entrada : this.entradas) {
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-30);
             ZonedDateTime avanco = now.plusDays(interval);
             if(entrada.getDataEntrada().toInstant().isAfter(now.toInstant())&& entrada.getDataEntrada().toInstant().isBefore(avanco.toInstant())){
@@ -258,7 +258,7 @@ public class Carteira {
                 }
         }
         for (Entrada entrada : this.entradas) {
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-30);
             if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())){
                 if(!entrada.getDataEntrada().toInstant().isAfter(now.toInstant())){
@@ -274,7 +274,7 @@ public class Carteira {
         int index = 0;
         List<Object> gastosN = new ArrayList<>();
         for (Gasto gasto : this.gastos) {
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-intervalo);
             if(!gasto.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())) {
                 if (!gasto.getDataEntrada().toInstant().isAfter(now.toInstant())) {
@@ -283,7 +283,7 @@ public class Carteira {
             }
         }
         for (Entrada entrada : this.entradas) {
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+            ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime trintaDias = now.plusDays(-intervalo);
             if(!entrada.getDataEntrada().toInstant().isBefore(trintaDias.toInstant())) {
                 if (!entrada.getDataEntrada().toInstant().isAfter(now.toInstant())) {

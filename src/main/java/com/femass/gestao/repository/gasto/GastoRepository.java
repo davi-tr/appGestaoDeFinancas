@@ -12,7 +12,11 @@ import java.util.List;
 public interface GastoRepository extends JpaRepository<Gasto, Long> {
     List<Gasto> findByCarteiraId(Long carteiraId);
 
-    List<Gasto> findByCarteiraIdAndDataEntradaBetween(Long carteiraId, ZonedDateTime dataInicio, ZonedDateTime dataFim);
+    @Query("SELECT g FROM Gasto g WHERE g.carteira.id = :carteiraId AND g.dataEntrada BETWEEN :dataInicio AND :dataFim")
+    List<Gasto> findByCarteiraIdAndDataEntradaBetween(
+            @Param("carteiraId") Long carteiraId,
+            @Param("dataInicio") ZonedDateTime dataInicio,
+            @Param("dataFim") ZonedDateTime dataFim);
 
     @Query("Select g from Gasto g where g.idGastoInicial = :id")
     List<Gasto> findByIdGastoInicial(@Param("id") Long id);

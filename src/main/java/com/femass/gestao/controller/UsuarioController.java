@@ -359,10 +359,6 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-
-
-
-
     public static class IntervaloDeDatasRequest {
         @NotNull
         private Long carteiraId;
@@ -403,7 +399,7 @@ public class UsuarioController {
         }
 
         public ZonedDateTime getDataFimAsZonedDateTime() {
-            return dataFim.atStartOfDay(ZoneId.of("America/Sao_Paulo"));
+            return dataFim.atTime(23,59,59).atZone(ZoneId.of("America/Sao_Paulo"));
         }
     }
 
