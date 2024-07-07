@@ -62,12 +62,12 @@ public class Gasto {
             this.valor = valorParcela.multiply(BigDecimal.valueOf(parcelas));
             this.parcelaAtual = 1;
             this.parcelaRestante = parcelas - parcelaAtual;
-            this.dataProxParcela = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusDays(30);
+            this.dataProxParcela = ZonedDateTime.now().plusDays(30);
             this.eParcela = true;
-            this.dataUltimaParcela = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).plusMonths(parcelas);
+            this.dataUltimaParcela = ZonedDateTime.now().plusMonths(parcelas);
             this.valor = getValor().multiply(BigDecimal.valueOf(-1));
         }
-        this.dataEntrada = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        this.dataEntrada = ZonedDateTime.now();
         this.categoria = dadosGasto.categoria();
     }
 
