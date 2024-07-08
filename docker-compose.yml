@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mobileapp
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Banco123
+      SPRING_JACKSON_TIME_ZONE: America/Sao_Paulo
+      SPRING_DATASOURCE_HIKARI_CONNECTIONTIMEOUT: 3000
+      SPRING_DATASOURCE_HIKARI_IDLETIMEOUT: 60000
+      SPRING_DATASOURCE_HIKARI_MAXLIFETIME: 30000
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_NAMING_IMPLICIT_STRATEGY: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+      SPRING_JPA_HIBERNATE_NAMING_PHYSICAL_STRATEGY: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      SERVER_ERROR_INCLUDE_STACKTRACE: never
+      HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRINGDOC_SWAGGER_UI_PATH: /swagger-ui.html
+      SPRINGDOC_SWAGGER_UI_ENABLED: "true"
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      API_SECURITY_TOKEN_SECRET: my-secret-key-from-video
+      BEZKODER_OPENAPI_DEV_URL: http://localhost:8080
+      BEZKODER_OPENAPI_PROD_URL: http://localhost:8080
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: mobileapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Banco123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
