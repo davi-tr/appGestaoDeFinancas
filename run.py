@@ -45,7 +45,7 @@ def delete_all_tables():
 # Executar a função para deletar todas as tabelas
 delete_all_tables()
 
-# Depois de deletar as tabelas, executar o script PowerShell
+
 subprocess.run(["git", "reset", "--hard"])
 subprocess.run(["git", "pull"])
 subprocess.run(["java", "-jar", "target\gestao-0.0.5-BETA.jar"])
